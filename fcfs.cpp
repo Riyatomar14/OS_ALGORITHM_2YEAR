@@ -1,52 +1,43 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-void total_waitingtime(int p[], int n, int b[], int a[], int wt[]) {
-    int current_time = 0;
-    wt[0] = 0;  // Waiting time for the first process is always 0 as it arrives first.
-    
-    for (int i = 1; i < n; i++) {
-        current_time += b[i - 1];
-        wt[i] = current_time - a[i];  // Waiting time = current time - arrival time
-        if (wt[i] < 0) {  // If the waiting time is negative, it means the process arrived before the CPU finished the previous process
-            wt[i] = 0;
-            current_time = a[i];  
-        }
-        cout << "Waiting time for process " << p[i] << ": " << wt[i] << endl;
-    }
-}
-
-void total_turnaroundtime(int p[], int n, int b[], int wt[], int tat[]) {
-    for (int i = 0; i < n; i++) {
-        tat[i] = wt[i] + b[i];  // Turnaround time = waiting time + burst time
-        cout << "Turnaround time for process " << p[i] << ": " << tat[i] << endl;
-    }
-}
-
-void avgtime(int p[], int n, int b[], int a[]) {
-    int tat[n], wt[n];
-    int totalwt = 0, totattat = 0;
-    
-    total_waitingtime(p, n, b, a, wt);
-    total_turnaroundtime(p, n, b, wt, tat);
-    
-    for (int i = 0; i < n; i++) {
-        totalwt += wt[i];
-        totattat += tat[i];
-    }
-    
-    cout << "Average waiting time: " << (float)totalwt / n << endl;
-    cout << "Average turnaround time: " << (float)totattat / n << endl;
-}
-
 int main() {
-    int p[] = {1, 2, 3, 4, 5, 6};  // Process IDs
-    int b[] = {4, 2, 3, 5, 6, 1}; // Burst times
-    int a[] = {0, 1, 2, 3, 4, 5};  // Arrival times
-    int n = sizeof(p) / sizeof(p[0]); 
-    
-    avgtime(p, n, b, a);
-    
+    int n, bt[20], wt[20], tat[20];
+    int avWt = 0, avTat = 0, i, j;
+
+    cout << "Enter the number of processes (maximum 20): ";
+    cin >> n;
+
+    cout << "\nEnter the burst time for each process:\n";
+    for (i = 0; i < n; i++) {
+        cout << "P[" << i+1 << "]: ";
+        cin >> bt[i];
+    }
+
+    wt[0] = 0; 
+    for (i = 1; i < n; i++) {
+        wt[i] = 0;
+        for (j = 0; j < i; j++) {
+            wt[i] += bt[j];
+        }
+    }
+
+    cout << "\nProcess\t\tBurst Time\tWaiting Time\tTurnaround Time\n";
+
+
+    for (i = 0; i < n; i++) {
+        tat[i] = wt[i] + bt[i];
+        avWt += wt[i];
+        avTat += tat[i];
+
+        cout << "P[" << i+1 << "]\t\t" << bt[i] << "\t\t" << wt[i] << "\t\t" << tat[i] << "\n";
+    }
+
+    avWt /= n;
+    avTat /= n;
+
+    cout << "\nAverage Waiting Time: " << avWt;
+    cout << "\nAverage Turnaround Time: " << avTat;
+
     return 0;
 }
-
